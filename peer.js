@@ -44,24 +44,28 @@ btnSend.onclick=sendChatMessage;
 
 // call start(true,i) to initiate
 function start(isInitiator,i) {
-     //iniConnection.disabled=true;
-	console.log("creado para: "+i);
-	pcs[i] = new webkitRTCPeerConnection(configuration, {optional: []});
-	
+    //iniConnection.disabled=true;
+    console.log("creado para: "+i);
+    pcs[i] = new webkitRTCPeerConnection(configuration);
+    
+    
+    // send any ice candidates to the other peer
+    pcs[i].onicecandidate = function (evt) {
+	signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+    };
 
-	// send any ice candidates to the other peer
-	pcs[i].onicecandidate = function (evt) {
-		if (evt.candidate){
-			signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
-		}
+
+    // let the "negotiationneeded" event trigger offer generation
+    pcs[i].onnegotiationneeded = function () {
+	pcs[i].createOffer().then(function(desc){
+	    return pcs[i].setLocalDescription(desc);
+	})
+	    .then(function() {
+		console.log("Local description:" + pcs[i].localDescription.sdp);
+		signalingChannel.send(JSON.stringify({ "sdp": pcs[i].localDescription , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+		})
+		.catch(logError);
 	};
-
-
-	// let the "negotiationneeded" event trigger offer generation
-	pcs[i].onnegotiationneeded = function () {
-		pcs[i].createOffer(function(desc){localDescCreated(desc,pcs[i],i);});
-		console.log("Create and send OFFER");
-	}
 
 	if (isInitiator) {
 		// create data channel and setup chat
@@ -77,61 +81,72 @@ function start(isInitiator,i) {
 	console.log("Saved in slot: "+i+" PeerConection: "+pcs[i]);
 }
 
+/*
 function localDescCreated(desc,pc,i) {
-    pc.setLocalDescription(desc, function () {
+    console.log("Setting local description...")
+    return pc.setLocalDescription(desc, function () {
 	console.log("localDescription is Set");
-        signalingChannel.send(JSON.stringify({ "sdp": pc.localDescription , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
-    }, logError);
+    });
 }
+*/
 
 signalingChannel.onmessage = function (evt) {
 	handleMessage(evt);
 }
 
 function handleMessage(evt){
-	var message = JSON.parse(evt.data);
+    var message = JSON.parse(evt.data);
 	
     if (message.numpeer){    
-		idpeer=message.numpeer;
-		console.log('Peer ID: '+idpeer);
-		return;  	
+	idpeer=message.numpeer;
+	console.log('Peer ID: '+idpeer);
+	return;  	
     }  
 
-	if (message.peerlist){    
-		console.log('Peer List '+message.peerlist);
-		peerlist=JSON.parse(message.peerlist);
-		for (i in peerlist){
-			console.log("Peer: "+peerlist[i]);
-		}
-		return;  	
+    if (message.peerlist){    
+	console.log('Peer List '+message.peerlist);
+	peerlist=JSON.parse(message.peerlist);
+	for (i in peerlist){
+	    console.log("Peer: "+peerlist[i]);
+	}
+	return;  	
     }  
    
     var id=(message.idtransmitter).split('"').join(''); 
-	var idreceiver=(message.idreceiver).split('"').join(''); 
+    var idreceiver=(message.idreceiver).split('"').join(''); 
     console.log("Received from: "+id+" and send to: "+idreceiver);
 
     if (!pcs[id]) { 
-		console.log('%cCreate a new PeerConection','background: #222; color: #bada55');
-		peerlist.push(id);
-		console.log("PEER LIST UPDATE: "+peerlist);
-		start(false,id);
+	console.log('%cCreate a new PeerConection','background: #222; color: #bada55');
+	peerlist.push(id);
+	console.log("PEER LIST UPDATE: "+peerlist);
+	start(false,id);
     } 	
 
     if (message.sdp && idreceiver==idpeer){
-        //console.log(message.sdp);   
-	pcs[id].setRemoteDescription(new RTCSessionDescription(message.sdp), function () {
-		console.log("remoteDescription is Set");
-    		// if we received an offer, we need to answer
-		if (pcs[id].remoteDescription.type == "offer"){
-			console.log("Create and send ANSWER");
-        		pcs[id].createAnswer(function(desc){localDescCreated(desc,pcs[id],id);});
-    		}
-        });
-    }
+        console.log("Mensaje SDP recibido: " + message.sdp + " tipo " + message.sdp.type);
 
+	if (message.sdp.type == "offer"){
+	    console.log("Create and send ANSWER");
+	    pcs[id].setRemoteDescription(message.sdp).then(function () {
+	    console.log("remoteDescription is Set");
+    	    // if we received an offer, we need to answer
+        	return pcs[id].createAnswer();
+	    })
+		.then(function(answer) {
+		    return pcs[id].setLocalDescription(answer);
+		})
+		.then(function () {
+		    signalingChannel.send(JSON.stringify({ "sdp": pcs[id].localDescription , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+id+'"'}));
+		}).catch(logError);
+	}else{
+	    pcs[id].setRemoteDescription(message.sdp).catch(logError);
+        };
+    }
+    
     if (message.candidate && idreceiver==idpeer){
-		console.log("Received ice candidate: "+ message.candidate.candidate); 
-		pcs[id].addIceCandidate(new RTCIceCandidate(message.candidate));
+	console.log("Received ice candidate: "+ message.candidate.candidate); 
+	pcs[id].addIceCandidate(message.candidate).catch(logError);
     }
 
 }
