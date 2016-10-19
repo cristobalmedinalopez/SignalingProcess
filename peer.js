@@ -30,14 +30,16 @@ var idpeer=0;
 var iniConnection = document.getElementById("initiateConnection");
 var msg = document.getElementById("msg");
 var btnSend= document.getElementById("send");
+var tini;
 btnSend.disabled=true;
 
 iniConnection.onclick=function(e){
-	document.getElementById("receive").innerHTML="<b>Conecting...</b>";
+    document.getElementById("receive").innerHTML="<b>Conecting...</b>";
+    tini = performance.now();
 	for (i in peerlist){
 		start(true,peerlist[i]);
 	}
-	iniConnection.disabled=true;
+    iniConnection.disabled=true;
 };
 
 btnSend.onclick=sendChatMessage;
@@ -51,7 +53,7 @@ function start(isInitiator,i) {
     
     // send any ice candidates to the other peer
     pcs[i].onicecandidate = function (evt) {
-	signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+	//signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
     };
 
 
@@ -141,6 +143,8 @@ function handleMessage(evt){
 		}).catch(logError);
 	}else{
 	    pcs[id].setRemoteDescription(message.sdp).catch(logError);
+	    var tend = performance.now();
+	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
         };
     }
     

@@ -45,15 +45,17 @@ class Signaling(WebSocket):
 			print 'Candidate num: '+decoded['idtransmitter']
 
 		for client in self.server.connections.itervalues():
-					if client != self:
-						try:
-							client.sendMessage(str(self.data))
-						except Exception as n:
-							print n
+			#if client != self:
+                        destination = decoded['idreceiver'][1]
+                        if client == peeridlist[int(destination)]:
+                                try:
+					client.sendMessage(str(self.data))
+				except Exception as n:
+					print n
 
 
 	def handleConnected(self):
-		global nextid
+		global nextid, peeridlist
 		print self.address, 'connected'
 
 		try:
