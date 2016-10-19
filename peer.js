@@ -47,7 +47,7 @@ btnSend.onclick=sendChatMessage;
 // call start(true,i) to initiate
 function start(isInitiator,i) {
     //iniConnection.disabled=true;
-    console.log("creado para: "+i);
+    //console.log("creado para: "+i);
     pcs[i] = new webkitRTCPeerConnection(configuration);
     
     
@@ -63,7 +63,7 @@ function start(isInitiator,i) {
 	    return pcs[i].setLocalDescription(desc);
 	})
 	    .then(function() {
-		console.log("Local description:" + pcs[i].localDescription.sdp);
+		//console.log("Local description:" + pcs[i].localDescription.sdp);
 		signalingChannel.send(JSON.stringify({ "sdp": pcs[i].localDescription , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
 		})
 		.catch(logError);
@@ -80,7 +80,7 @@ function start(isInitiator,i) {
 			setupChat(i);
 		};
 	}  
-	console.log("Saved in slot: "+i+" PeerConection: "+pcs[i]);
+	//console.log("Saved in slot: "+i+" PeerConection: "+pcs[i]);
 }
 
 /*
@@ -108,15 +108,17 @@ function handleMessage(evt){
     if (message.peerlist){    
 	console.log('Peer List '+message.peerlist);
 	peerlist=JSON.parse(message.peerlist);
+	/*
 	for (i in peerlist){
 	    console.log("Peer: "+peerlist[i]);
 	}
+	*/
 	return;  	
     }  
    
     var id=(message.idtransmitter).split('"').join(''); 
     var idreceiver=(message.idreceiver).split('"').join(''); 
-    console.log("Received from: "+id+" and send to: "+idreceiver);
+    //console.log("Received from: "+id+" and send to: "+idreceiver);
 
     if (!pcs[id]) { 
 	console.log('%cCreate a new PeerConection','background: #222; color: #bada55');
@@ -126,7 +128,7 @@ function handleMessage(evt){
     } 	
 
     if (message.sdp && idreceiver==idpeer){
-        console.log("Mensaje SDP recibido: " + message.sdp + " tipo " + message.sdp.type);
+        //console.log("Mensaje SDP recibido: " + message.sdp + " tipo " + message.sdp.type);
 
 	if (message.sdp.type == "offer"){
 	    console.log("Create and send ANSWER");
