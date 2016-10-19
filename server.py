@@ -37,9 +37,9 @@ class Signaling(WebSocket):
 
 		if 'sdp' in decoded:		
 			if decoded['sdp']['type'] == 'offer':
-				print 'Offer'
+				print 'Offer form peer ' + decoded['idtransmitter'][1] + ' to peer ' +  decoded['idreceiver'][1]
 			else:
-				print 'Answer'
+				print 'Answer from peer '+ decoded['idtransmitter'][1] + ' to peer ' +  decoded['idreceiver'][1]
 
 		if 'candidate' in decoded:
 			print 'Candidate num: '+decoded['idtransmitter']
