@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 var signalingChannel = new WebSocket("ws://127.0.0.1:9876/");
+var controlChannel = new WebSocket("ws://127.0.0.1:9866/");
 var configuration = {iceServers: [{ url: 'stun:stun.l.google.com:19302' }]};
 //var configuration = {iceServers: [{ url: 'stun:150.214.150.137:3478' }]};
 var pcs=[];
@@ -43,24 +44,6 @@ iniConnection.onclick=function(e){
 };
 
 btnSend.onclick=sendChatMessage;
-
-
-function callPHP(params) {
-    var httpc = new XMLHttpRequest(); // simplified for clarity
-    var url = "save.php";
-    httpc.open("POST", url, true); // sending as POST
-
-    httpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    httpc.setRequestHeader("Content-Length", params.length); // POST request MUST have a Content-Length header (as per HTTP/1.1)
-
-    httpc.onreadystatechange = function() { //Call a function when the state changes.
-    if(httpc.readyState == 4 && httpc.status == 200) { // complete and no errors
-        alert(httpc.responseText); // some processing here, or whatever you want to do with the response
-        }
-    }
-    httpc.send(params);
-}
-
 
 // call start(true,i) to initiate
 function start(isInitiator,i) {
@@ -166,7 +149,8 @@ function handleMessage(evt){
 	    var tend = performance.now();
 	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
 	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
-	    callPHP('fn=filename.txt&data='+json);
+	    controlChannel.send(JSON.stringify({ "control": json , "nickname": document.getElementById("login").value, "id": id}));
+
         };
     }
     
