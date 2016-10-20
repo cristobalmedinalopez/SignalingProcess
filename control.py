@@ -53,6 +53,6 @@ class Signaling(WebSocket):
       
                 
 if __name__ == '__main__':
-	server = SimpleWebSocketServer('', 9876, Signaling)
+	server = SimpleWebSocketServer('', 9866, Signaling)
 	server.serveforever()
 
