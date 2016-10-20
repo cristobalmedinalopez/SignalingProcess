@@ -44,6 +44,24 @@ iniConnection.onclick=function(e){
 
 btnSend.onclick=sendChatMessage;
 
+
+function callPHP(params) {
+    var httpc = new XMLHttpRequest(); // simplified for clarity
+    var url = "http://www.hpca.ual.es/~cmedina/files/save.php";
+    httpc.open("POST", url, true); // sending as POST
+
+    httpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    httpc.setRequestHeader("Content-Length", params.length); // POST request MUST have a Content-Length header (as per HTTP/1.1)
+
+    httpc.onreadystatechange = function() { //Call a function when the state changes.
+    if(httpc.readyState == 4 && httpc.status == 200) { // complete and no errors
+        alert(httpc.responseText); // some processing here, or whatever you want to do with the response
+        }
+    }
+    httpc.send(params);
+}
+
+
 // call start(true,i) to initiate
 function start(isInitiator,i) {
     //iniConnection.disabled=true;
@@ -147,6 +165,8 @@ function handleMessage(evt){
 	    pcs[id].setRemoteDescription(message.sdp).catch(logError);
 	    var tend = performance.now();
 	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
+	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
+	    callPHP('fn=filename.txt&data='+json);
         };
     }
     

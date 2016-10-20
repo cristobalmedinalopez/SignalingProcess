@@ -55,7 +55,7 @@ class Signaling(WebSocket):
 
 
 	def handleConnected(self):
-		global nextid, peeridlist
+		global nextid, peeridlist, peerlist
 		print self.address, 'connected'
 
 		try:
@@ -68,8 +68,11 @@ class Signaling(WebSocket):
 			print n
 
 	def handleClose(self):
+                global peerlist, peeridlist, nextid
 		print self.address, 'closed'
-		peerlist.remove(peeridlist[self]);
+                peernumber = peeridlist.keys()[peeridlist.values().index(self)]
+		peerlist.remove(peernumber);
+                print 'Peer '+str(peernumber)+' deleted'
 		'''for client in self.server.connections.itervalues():
 			if client != self:
 				try:
