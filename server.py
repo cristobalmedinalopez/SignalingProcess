@@ -44,6 +44,8 @@ class Signaling(WebSocket):
 		if 'candidate' in decoded:
 			print 'Candidate num: '+decoded['idtransmitter']
 
+                sys.stdout.flush()
+                        
 		for client in self.server.connections.itervalues():
 			#if client != self:
                         destination = decoded['idreceiver'][1:-1]
@@ -57,7 +59,8 @@ class Signaling(WebSocket):
 	def handleConnected(self):
 		global nextid, peeridlist, peerlist
 		print self.address, 'connected'
-
+                sys.stdout.flush()
+                
 		try:
 			self.sendMessage(str('{"numpeer":"'+str(nextid)+'"}'))
 			self.sendMessage(str('{"peerlist":"'+str(peerlist)+'"}'))
@@ -73,12 +76,7 @@ class Signaling(WebSocket):
                 peernumber = peeridlist.keys()[peeridlist.values().index(self)]
 		peerlist.remove(peernumber);
                 print 'Peer '+str(peernumber)+' deleted'
-		'''for client in self.server.connections.itervalues():
-			if client != self:
-				try:
-					client.sendMessage(str(self.address[0]) + ' - disconnected')
-				except Exception as n:
-					print n '''       
+                sys.stdout.flush()
 
 if __name__ == '__main__':
 	nextid = 0
@@ -86,4 +84,3 @@ if __name__ == '__main__':
 	peeridlist={}
 	server = SimpleWebSocketServer('', 9876, Signaling)
 	server.serveforever()
-

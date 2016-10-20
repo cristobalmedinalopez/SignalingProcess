@@ -47,10 +47,12 @@ class Signaling(WebSocket):
 
 	def handleConnected(self):
 		print self.address, 'connected'
-                
+                sys.stdout.flush()
+
 	def handleClose(self):
 		print self.address, 'closed'
-      
+                sys.stdout.flush()
+
                 
 if __name__ == '__main__':
 	server = SimpleWebSocketServer('', 9866, Signaling)
