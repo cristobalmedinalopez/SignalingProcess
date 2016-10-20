@@ -46,15 +46,27 @@
     <button id="send">Send</button>
 	<br />Received Messages:
   </div>
-  <div id="receive">
+  <div id="receive" class="content">
 	 <br />
-	  Hello, welcome to the p2psp team chat room. This chat works via P2P network and the messages are not stored in any server, the communication is peer to peer between web browsers. 
+	 <h1>Hello and thanks for coming here! </h1>
+	 <h2>Would you like to help us to analise and improve peer to peer communications on the Web?</h2>
+	 Your colaboration is very important for us because with your help we can create a dataset that collects for each peer the time spent in the WebRTC signaling process in a real scenario.
+	 
+	 <h2>Your mission</h2>
+	 It is very simple. You have to write a nickname (blank is possible too) and click the button enter. <b>That's all!</b><br />
+	 After that, a web chat appears, you can chat with other participants in real time (<b>Only if you want. Chat is only to have fun :). It's not a part of the experiment.</b>).<br />
+	 It works via P2P network and the messages are not stored on any server, the communication is peer to peer between web browsers. So, your messages doesn't pass through a server on Internet. Cool! isn't it?<br />
+
+	 
+	 <h2>How it works?</h2>
+
+	When you press "Enter" button, your browser received a list of peers and carry out a handshake process known as Signaling process. This exchange of messages (sdp messages) passes through a server known as Signaling Server. When the process is completed, your browser is able to comunicate with other browsers directly with a peer to peer conection. During the signaling process we (my team and me) are receiving the same information that you can see in the developer console (press F12 to see it). It's only time information. In any case, this is open source and you can check it in depth!
+	 <br />
+ 	 <b>Note:This version only works properly with Chromium and Google Chrome (including Android version).</b><br />
+
+	 
 <br /><br />
-<b>First, write a nickname and click the button enter.</b>
-<br /><br />
-This version only works with Google Chrome.
-<br /><br />
-Enjoy!
+<b>Thank you very much for participating in this study.</b><br />For further questions send an email to cristobalmedina@ual.es
 	  </div>
   <script src="peer.js"></script>
 </div>

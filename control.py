@@ -35,14 +35,14 @@ class Signaling(WebSocket):
 		except (ValueError, KeyError, TypeError):
 		    print "JSON format error"
 
-		if 'control' in decoded:
-                        msg = decoded['control'][1]
-                        pid = decoded['id'][1]
-                        nick = decoded['nick'][1]
-                        
-                        f = open(pid+"_"+nick,'a')
-                        f.write(msg) # python will convert \n to os.linesep
-                        f.close()
+                msg = decoded['control'][1:-1]
+                pid = decoded['id'][1:-1]
+                nick = decoded['nickname'][1:-1]
+                
+                f = open("data/"+pid+"_"+nick,'a')
+                f.write(time.strftime("%c")+':\n')
+                f.write(msg+'\n')
+                f.close()
 
 
 	def handleConnected(self):

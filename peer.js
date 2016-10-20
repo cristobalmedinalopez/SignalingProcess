@@ -149,7 +149,7 @@ function handleMessage(evt){
 	    var tend = performance.now();
 	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
 	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
-	    controlChannel.send(JSON.stringify({ "control": json , "nickname": document.getElementById("login").value, "id": id}));
+	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"' , "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"'}));
 
         };
     }
@@ -163,7 +163,8 @@ function handleMessage(evt){
 
 function setupChat(i) {
     channel[i].onopen = function () {
-        btnSend.disabled=false;
+        btnSend.disabled=false;	
+	document.getElementById("receive").innerHTML="<b>Conected! :-)</b>";
 	document.getElementById("chatcontrols").style.display="inline";
     };
 

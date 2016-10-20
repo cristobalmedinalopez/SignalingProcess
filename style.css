@@ -34,4 +34,7 @@ body{
 	display: none;
 	min-height: 100%;
 }
-
+.content{
+    margin-left:10px;
+    margin-right:10px;
+}

@@ -37,16 +37,16 @@ class Signaling(WebSocket):
 
 		if 'sdp' in decoded:		
 			if decoded['sdp']['type'] == 'offer':
-				print 'Offer form peer ' + decoded['idtransmitter'][1] + ' to peer ' +  decoded['idreceiver'][1]
+				print 'Offer form peer ' + decoded['idtransmitter'][1:-1] + ' to peer ' +  decoded['idreceiver'][1]
 			else:
-				print 'Answer from peer '+ decoded['idtransmitter'][1] + ' to peer ' +  decoded['idreceiver'][1]
+				print 'Answer from peer '+ decoded['idtransmitter'][1:-1] + ' to peer ' +  decoded['idreceiver'][1]
 
 		if 'candidate' in decoded:
 			print 'Candidate num: '+decoded['idtransmitter']
 
 		for client in self.server.connections.itervalues():
 			#if client != self:
-                        destination = decoded['idreceiver'][1]
+                        destination = decoded['idreceiver'][1:-1]
                         if client == peeridlist[int(destination)]:
                                 try:
 					client.sendMessage(str(self.data))
