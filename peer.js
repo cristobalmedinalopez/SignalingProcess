@@ -47,7 +47,7 @@ btnSend.onclick=sendChatMessage;
 
 function callPHP(params) {
     var httpc = new XMLHttpRequest(); // simplified for clarity
-    var url = "http://www.hpca.ual.es/~cmedina/files/save.php";
+    var url = "save.php";
     httpc.open("POST", url, true); // sending as POST
 
     httpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
