@@ -55,6 +55,8 @@ function start(isInitiator,i) {
     // send any ice candidates to the other peer
     pcs[i].onicecandidate = function (evt) {
 	//signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+	if (evt.candidate != null)
+	    controlChannel.send(JSON.stringify({ "control": '"'+evt.candidate.candidate+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
     };
 
 
@@ -149,7 +151,7 @@ function handleMessage(evt){
 	    var tend = performance.now();
 	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
 	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
-	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"' , "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
+	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
 
         };
     }
