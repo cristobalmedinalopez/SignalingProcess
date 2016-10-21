@@ -149,7 +149,7 @@ function handleMessage(evt){
 	    var tend = performance.now();
 	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
 	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
-	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"' , "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"'}));
+	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"' , "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
 
         };
     }

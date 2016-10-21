@@ -38,8 +38,9 @@ class Signaling(WebSocket):
                 msg = decoded['control'][1:-1]
                 pid = decoded['id'][1:-1]
                 nick = decoded['nickname'][1:-1]
+                teamsize = decoded['teamsize'][1:-1]
                 
-                f = open("data/"+pid+"_"+nick,'a')
+                f = open("data/"+teamsize+"_"+pid+"_"+nick,'a')
                 f.write(time.strftime("%c")+':\n')
                 f.write(msg+'\n')
                 f.close()
