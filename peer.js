@@ -163,8 +163,8 @@ function handleMessage(evt){
 
 function setupChat(i) {
     channel[i].onopen = function () {
-        btnSend.disabled=false;	
-	document.getElementById("receive").innerHTML="<b>Conected! :-)</b>";
+        btnSend.disabled=false;
+	document.getElementById("receive").innerHTML="<br /><b>Conected! :-)</b>";
 	document.getElementById("chatcontrols").style.display="inline";
     };
 
