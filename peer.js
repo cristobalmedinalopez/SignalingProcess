@@ -54,9 +54,11 @@ function start(isInitiator,i) {
     
     // send any ice candidates to the other peer
     pcs[i].onicecandidate = function (evt) {
-	//signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
-	if (evt.candidate != null)
+	signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+	if (evt.candidate != null){
 	    controlChannel.send(JSON.stringify({ "control": '"'+evt.candidate.candidate+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
+	    console.log(evt.candidate.candidate);
+	}
     };
 
 
@@ -126,7 +128,7 @@ function handleMessage(evt){
     if (!pcs[id]) { 
 	console.log('%cCreate a new PeerConection','background: #222; color: #bada55');
 	peerlist.push(id);
-	console.log("PEER LIST UPDATE: "+peerlist);
+	//console.log("PEER LIST UPDATE: "+peerlist);
 	start(false,id);
     } 	
 
@@ -157,7 +159,7 @@ function handleMessage(evt){
     }
     
     if (message.candidate && idreceiver==idpeer){
-	console.log("Received ice candidate: "+ message.candidate.candidate); 
+	//console.log("Received ice candidate: "+ message.candidate.candidate); 
 	pcs[id].addIceCandidate(message.candidate).catch(logError);
     }
 
@@ -179,11 +181,11 @@ function sendChatMessage() {
     document.getElementById("receive").innerHTML+="<br />"+document.getElementById("login").value+ ": "+msg.value;
 	for (i in peerlist){  
 		if (peerlist[i]!=idpeer){
-			console.log("send to "+peerlist[i]);  
+			//console.log("send to "+peerlist[i]);  
 			try{
 				channel[peerlist[i]].send(document.getElementById("login").value+ ": "+msg.value);
 			}catch(e){
-				console.log(i+" said bye!");
+				//console.log(i+" said bye!");
 			}
 
 		}
