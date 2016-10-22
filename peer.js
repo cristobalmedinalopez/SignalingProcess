@@ -61,7 +61,6 @@ function start(isInitiator,i) {
 	    controlChannel.send(JSON.stringify({ "control": '"'+evt.candidate.candidate+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+iteamsize+'"'}));
 	    console.log(evt.candidate.candidate);
 	}
-
     };
 
 
@@ -131,7 +130,7 @@ function handleMessage(evt){
     if (!pcs[id]) { 
 	console.log('%cCreate a new PeerConnection','background: #222; color: #bada55');
 	peerlist.push(id);
-	console.log("PEER LIST UPDATE: "+peerlist);
+	//console.log("PEER LIST UPDATE: "+peerlist);
 	start(false,id);
     } 	
 

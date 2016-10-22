@@ -33,6 +33,8 @@ body{
 .chat{
 	display: none;
 	min-height: 100%;
+	margin-left:10px;
+	margin-right:10px;
 }
 .content{
     margin-left:10px;
