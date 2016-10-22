@@ -27,6 +27,7 @@ var configuration = {iceServers: [{ url: 'stun:stun.l.google.com:19302' }]};
 var pcs=[];
 var channel=[];
 var peerlist=[];
+var iteamsize=0;
 var idpeer=0;
 var iniConnection = document.getElementById("initiateConnection");
 var msg = document.getElementById("msg");
@@ -35,7 +36,8 @@ var tini;
 btnSend.disabled=true;
 
 iniConnection.onclick=function(e){
-    document.getElementById("receive").innerHTML="<b>Conecting...</b>";
+    document.getElementById("receive").innerHTML="<b>Connecting...</b>";
+    iteamsize=peerlist.length;
     tini = performance.now();
 	for (i in peerlist){
 		start(true,peerlist[i]);
@@ -54,7 +56,12 @@ function start(isInitiator,i) {
     
     // send any ice candidates to the other peer
     pcs[i].onicecandidate = function (evt) {
-	//signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+	signalingChannel.send(JSON.stringify({ "candidate": evt.candidate , "idtransmitter":'"'+idpeer+'"', "idreceiver":'"'+i+'"'}));
+	if (evt.candidate != null){
+	    controlChannel.send(JSON.stringify({ "control": '"'+evt.candidate.candidate+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+iteamsize+'"'}));
+	    console.log(evt.candidate.candidate);
+	}
+
     };
 
 
@@ -81,7 +88,7 @@ function start(isInitiator,i) {
 			setupChat(i);
 		};
 	}  
-	//console.log("Saved in slot: "+i+" PeerConection: "+pcs[i]);
+	//console.log("Saved in slot: "+i+" PeerConnection: "+pcs[i]);
 }
 
 /*
@@ -122,7 +129,7 @@ function handleMessage(evt){
     //console.log("Received from: "+id+" and send to: "+idreceiver);
 
     if (!pcs[id]) { 
-	console.log('%cCreate a new PeerConection','background: #222; color: #bada55');
+	console.log('%cCreate a new PeerConnection','background: #222; color: #bada55');
 	peerlist.push(id);
 	console.log("PEER LIST UPDATE: "+peerlist);
 	start(false,id);
@@ -147,15 +154,16 @@ function handleMessage(evt){
 	}else{
 	    pcs[id].setRemoteDescription(message.sdp).catch(logError);
 	    var tend = performance.now();
-	    console.log("%cAnswer for peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
+	    console.log("%cAnswer from peer "+ id + " received after " + (tend - tini) + " milliseconds. ",'background: #CCC; color: #FF0000');
+	    document.getElementById("receive").innerHTML+="<br />Answer from peer "+ id + " received after " + (tend - tini) + " milliseconds.";
 	    var json = "Answer for peer "+ id + " received after " + (tend - tini) + " milliseconds.";
-	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"' , "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"'}));
+	    controlChannel.send(JSON.stringify({ "control": '"'+json+'"', "nickname": '"'+document.getElementById("login").value+'"', "id":'"'+idpeer+'"', "teamsize":'"'+peerlist.length+'"'}));
 
         };
     }
     
     if (message.candidate && idreceiver==idpeer){
-	console.log("Received ice candidate: "+ message.candidate.candidate); 
+	//console.log("Received ice candidate: "+ message.candidate.candidate); 
 	pcs[id].addIceCandidate(message.candidate).catch(logError);
     }
 
@@ -164,7 +172,7 @@ function handleMessage(evt){
 function setupChat(i) {
     channel[i].onopen = function () {
         btnSend.disabled=false;	
-	document.getElementById("receive").innerHTML="<b>Conected! :-)</b>";
+	document.getElementById("receive").innerHTML+="<br /> <b>Peer "+i+" connected! :-)</b>";
 	document.getElementById("chatcontrols").style.display="inline";
     };
 
@@ -177,11 +185,11 @@ function sendChatMessage() {
     document.getElementById("receive").innerHTML+="<br />"+document.getElementById("login").value+ ": "+msg.value;
 	for (i in peerlist){  
 		if (peerlist[i]!=idpeer){
-			console.log("send to "+peerlist[i]);  
+			//console.log("send to "+peerlist[i]);  
 			try{
 				channel[peerlist[i]].send(document.getElementById("login").value+ ": "+msg.value);
 			}catch(e){
-				console.log(i+" said bye!");
+				//console.log(i+" said bye!");
 			}
 
 		}
